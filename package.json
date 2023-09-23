@@ -1,0 +1,19 @@
+{
+  "name": "aquarius",
+  "version": "1.0.0",
+  "description": "### Usage",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyz1901/aquarius.git"
+  },
+  "author": "cyz1901",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cyz1901/aquarius/issues"
+  },
+  "homepage": "https://github.com/cyz1901/aquarius#readme"
+}
