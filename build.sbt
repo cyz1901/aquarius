@@ -38,6 +38,7 @@ lazy val frontend =
       },
       libraryDependencies ++= Seq.concat(
         Dependencies.calico.value,
-        Dependencies.scalaJsDom.value
+        Dependencies.scalaJsDom.value,
+        Dependencies.frontrouteCalico.value
       )
     )

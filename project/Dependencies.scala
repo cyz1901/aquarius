@@ -15,4 +15,10 @@ object Dependencies {
     )
   }
 
+  val frontrouteCalico: Def.Initialize[Seq[ModuleID]] = Def.setting {
+    Seq(
+      "io.frontroute" %%% "frontroute-calico" % DependencyVersions.frontrouteCalico
+    )
+  }
+
 }
