@@ -7,6 +7,9 @@ import fs2.*
 import fs2.concurrent.*
 import fs2.dom.*
 
+import frontroute.*
+import frontroute.given
+
 import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
@@ -35,13 +38,17 @@ object App {
     }
 
   @main def main() = {
-    app
-      .renderInto(
-        dom.document
-          .getElementById("app-container")
-          .asInstanceOf[fs2.dom.Node[IO]]
+    routes(
+      div(
+        path("home") {
+          app
+        }
       )
-      .useForever
+    ).renderInto(
+      dom.document
+        .getElementById("app-container")
+        .asInstanceOf[fs2.dom.Node[IO]]
+    ).useForever
       .unsafeRunAndForget()
   }
 }
