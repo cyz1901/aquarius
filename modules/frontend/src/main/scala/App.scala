@@ -21,6 +21,12 @@ object IndexCss extends js.Object
 object App {
   val indexCss: IndexCss.type = IndexCss
 
+  val tabs = List(
+    "introduction" -> "Introduction",
+    "knowledge" -> "Knowledge",
+    "Message" -> "Message"
+  )
+
   val app: Resource[IO, HtmlDivElement[IO]] =
     SignallingRef[IO].of("world").toResource.flatMap { name =>
       div(
@@ -41,7 +47,10 @@ object App {
     routes(
       div(
         path("home") {
-          app
+          HomePage.root
+        },
+        noneMatched {
+          div("404")
         }
       )
     ).renderInto(
