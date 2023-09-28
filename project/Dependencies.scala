@@ -20,5 +20,4 @@ object Dependencies {
       "io.frontroute" %%% "frontroute-calico" % DependencyVersions.frontrouteCalico
     )
   }
-
 }
