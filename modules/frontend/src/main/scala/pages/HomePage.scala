@@ -11,6 +11,9 @@ import org.scalajs.dom.*
 import frontroute.*
 import frontroute.given
 
+import typings.animejs.mod.*
+import typings.animejs.global.anime
+
 object HomePage {
   val tabs = List(
     "introduction" -> "Introduction",
@@ -23,6 +26,7 @@ object HomePage {
       cls := "grid grid-cols-1",
       tabs.map { case (path, tabLabel) =>
         a(
+          idAttr := path,
           relativeHref(path),
           navMod { active =>
             cls <-- active.ifF(
@@ -39,6 +43,7 @@ object HomePage {
             IO {
               import org.scalajs.dom
               org.scalajs.dom.console.log("aaa")
+              // anime()
             }
           )),
           div(
