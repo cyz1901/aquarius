@@ -6,14 +6,21 @@ import cats.effect.*
 import fs2.dom.*
 import scala.scalajs.js
 import org.scalajs.dom.*
+import org.scalajs.dom
 
 import typings.three.mod.*
 import typings.three.mod.BoxGeometry
 import typings.three.srcMaterialsMeshBasicMaterialMod.MeshBasicMaterialParameters
 import typings.three.srcCoreObject3DMod.Object3DEventMap
 import typings.std.stdStrings.canvas
+import typings.three.srcMathColorMod
+import typings.three.srcRenderersWebGLRendererMod.WebGLRendererParameters
 
 object IntroductionPage {
+  val scene = IO.ref[Scene](null)
+  val camera = IO.ref[PerspectiveCamera](null)
+  val renderer = IO.ref[WebGLRenderer](null)
+
   val root: Resource[IO, HtmlElement[IO]] = div(
     "hello",
     renderWebGL()
@@ -66,5 +73,40 @@ object IntroductionPage {
         cls := " bg-slate-900 w-[100px] h-[100px] left-[50px] top-[50px] z-10 absolute"
       )
     )
+  }
+
+  def createWorld(): Unit = {
+    IO {
+      val _width = dom.window.innerWidth;
+      val _height = dom.window.innerHeight;
+
+      val scene = Scene();
+      scene.background = srcMathColorMod.Color()
+
+      val camera = PerspectiveCamera(35, _width / _height, 1, 1000);
+      camera.position.set(0, 0, 16);
+
+      val renderer = WebGLRenderer(
+        WebGLRendererParameters().setAlpha(false).setAntialias(false)
+      );
+      renderer.setSize(_width, _height);
+      renderer.shadowMap.enabled = true;
+
+      dom.document.body.appendChild(renderer.domElement);
+
+      dom.window.addEventListener("resize", onWindowResize, false);
+    }
+  }
+
+  def onWindowResize() = {
+     import scalajs.js.internal.UnitOps.unitOrOps
+    for {
+      width <- dom.window.innerWidth
+      height <- dom.window.innerHeight;
+      _ <- renderer.map(x => x.s(width, height));
+    camera.aspect = _width / _height;
+    camera.updateProjectionMatrix();
+    }
+
   }
 }

@@ -12,7 +12,9 @@ import frontroute.*
 import frontroute.given
 
 import typings.animejs.mod.*
-import typings.animejs.global.anime
+import typings.animejs.global.*
+import typings.animejs.libAnimeMod
+import org.scalajs.dom.HTMLElement
 
 object HomePage {
   val tabs = List(
@@ -23,34 +25,77 @@ object HomePage {
 
   val root: Resource[IO, HtmlElement[IO]] = div(
     div(
-      cls := "grid grid-cols-1",
+      cls := "flex flex-wrap justify-center items-center w-16",
       tabs.map { case (path, tabLabel) =>
+        import org.scalajs.dom
         a(
-          idAttr := path,
+          idAttr := s"$path-a",
           relativeHref(path),
           navMod { active =>
             cls <-- active.ifF(
               List(
-                "text-xl px-4 py-1 rounded border-b-2 border-blue-800 bg-blue-200 text-slate-900 [writing-mode:vertical-rl] transform rotate-180"
+                "text-xl px-4 py-1 rounded bg-blue-200 text-slate-900 [writing-mode:vertical-rl] transform rotate-180 mb-4 flex-1"
               ),
               List(
-                "text-xl px-4 py-1 rounded border-b-2 border-transparent text-slate-900 [writing-mode:vertical-rl] transform rotate-180"
+                "text-xl px-4 py-1 rounded text-slate-900 [writing-mode:vertical-rl] transform rotate-180 mb-4 flex-1"
               )
             )
           },
           tabLabel,
           onMouseEnter --> (_.foreach(_ =>
             IO {
-              import org.scalajs.dom
-              org.scalajs.dom.console.log("aaa")
-              // anime()
+              val height = Math
+                .floor(
+                  dom.window
+                    .getComputedStyle(dom.document.getElementById(s"$path-a"))
+                    .height
+                    .replace("px", "")
+                    .toDouble - dom.window
+                    .getComputedStyle(dom.document.getElementById(s"$path-a"))
+                    .paddingTop
+                    .replace("px", "")
+                    .toDouble - dom.window
+                    .getComputedStyle(dom.document.getElementById(s"$path-a"))
+                    .paddingBottom
+                    .replace("px", "")
+                    .toDouble
+                )
+
+              libAnimeMod(
+                AnimeParams()
+                  .setTargets(s"#${path}")
+                  .set(
+                    "height",
+                    s"${height}px"
+                  )
+                  .setDuration(1000)
+                  .setEasing(EasingOptions.easeInOutExpo)
+              )
+            }
+          )),
+          onMouseLeave --> (_.foreach(_ =>
+            IO {
+              libAnimeMod(
+                AnimeParams()
+                  .setTargets(s"#${path}")
+                  .set(
+                    "height",
+                    s"0px"
+                  )
+                  .setDuration(1000)
+                  .setEasing(EasingOptions.easeInOutExpo)
+              )
             }
           )),
           div(
-            cls := "w-2 h-2 bg-red-500"
+            idAttr := path,
+            cls := "w-2 h-[0px] bg-purple-800"
           )
         )
       }
-    )
+    ),
+    frontroute.path("introduction") {
+      IntroductionPage.root
+    }
   )
 }
