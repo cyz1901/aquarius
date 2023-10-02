@@ -25,7 +25,7 @@ object HomePage {
 
   val root: Resource[IO, HtmlElement[IO]] = div(
     div(
-      cls := "flex flex-wrap justify-center items-center w-16",
+      cls := "flex flex-wrap justify-center items-center w-16 fixed top-0 left-0",
       tabs.map { case (path, tabLabel) =>
         import org.scalajs.dom
         a(
@@ -34,10 +34,10 @@ object HomePage {
           navMod { active =>
             cls <-- active.ifF(
               List(
-                "text-xl px-4 py-1 rounded bg-blue-200 text-slate-900 [writing-mode:vertical-rl] transform rotate-180 mb-4 flex-1"
+                "text-xl px-4 py-1 rounded bg-blue-200 text-slate-900 [writing-mode:vertical-rl] transform rotate-180 mb-4 flex-1 font-Roboto font-normal"
               ),
               List(
-                "text-xl px-4 py-1 rounded text-slate-900 [writing-mode:vertical-rl] transform rotate-180 mb-4 flex-1"
+                "text-xl px-4 py-1 rounded text-slate-900 [writing-mode:vertical-rl] transform rotate-180 mb-4 flex-1 font-Roboto font-normal"
               )
             )
           },
@@ -89,7 +89,7 @@ object HomePage {
           )),
           div(
             idAttr := path,
-            cls := "w-2 h-[0px] bg-purple-800"
+            cls := "w-[6px] h-[0px] bg-purple-300 absolute right-[28px] top-0 rounded"
           )
         )
       }

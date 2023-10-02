@@ -8,7 +8,11 @@ module.exports = (api) => {
       "./index.html",
     ],
     theme: {
-      extend: {},
+      extend: {
+        fontFamily: {
+          Roboto: ["Roboto"],
+        },
+      },
     },
   };
 };

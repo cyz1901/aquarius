@@ -2,3 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 @tailwind screens;
+
+/* @layer base {
+  a {
+    font-family: Inter, system-ui, sans-serif;
+  }
+} */
