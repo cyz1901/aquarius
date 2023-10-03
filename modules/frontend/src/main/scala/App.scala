@@ -35,9 +35,6 @@ object App {
       pathPrefix("home") {
         HomePage.root
       },
-      // path("home" / "introduction") {
-      //   IntroductionPage.root
-      // },
       noneMatched {
         div("404")
       }

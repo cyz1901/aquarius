@@ -21,201 +21,35 @@ import typings.three.srcConstantsMod.Side
 import org.scalablytyped.runtime.StringDictionary
 import scala.scalajs.js.Date
 import scala.scalajs.js.annotation.JSImport
-
-trait IntroductionBackgroundDependency {
-  val scene: Option[Scene]
-  val camera: Option[PerspectiveCamera]
-  val renderer: Option[WebGLRenderer]
-  val shapeGroup: Option[Group[Any]]
-}
-
-case class IntroductionBackgroundData(
-    val scene: Option[Scene] = None,
-    val camera: Option[PerspectiveCamera] = None,
-    val renderer: Option[WebGLRenderer] = None,
-    val shapeGroup: Option[Group[Any]] = Some(Group())
-) extends IntroductionBackgroundDependency {}
-
-@js.native
-@JSImport("glsl/bgVertexShader.vert", JSImport.Default)
-object VertexShader extends js.Object
-
-@js.native
-@JSImport("glsl/bgFragmentShader.vert", JSImport.Default)
-object FragmentShader extends js.Object
+import components.BubbleKineticEffectComponent
+import typings.std.stdStrings.path
+import org.scalajs.dom.SVGElement
 
 object IntroductionPage {
-
-  val startTimeStamp = Date.now()
-  val root: Resource[IO, HtmlElement[IO]] = div(
+  val root: Resource[IO, HtmlElement[IO]] = {
     div(
-      cls := "absolute w-[calc(100%_-_64px)] h-[3000px] right-0"
-    ),
-    renderBackground()
-  )
-
-  val primitiveElement = Ref.of[IO, (IntroductionBackgroundData) => IO[Unit]]((data) => {
-    val step =
-      for {
-        mesh <- IO(Object3D())
-        mat <- IO(
-          ShaderMaterial(
-            ShaderMaterialParameters()
-              .setSide(Side.`2`)
-              .setUniforms(
-                StringDictionary()
-                  .set("time", ("type" -> "f", "value" -> 0.1))
-                  .set("pointscale", ("type" -> "f", "value" -> 0.2))
-                  .set("decay", ("type" -> "f", "value" -> 0.3))
-                  .set("size", ("type" -> "f", "value" -> 0.3))
-                  .set("displace", ("type" -> "f", "value" -> 0.3))
-                  .set("complex", ("type" -> "f", "value" -> 0.0))
-                  .set("waves", ("type" -> "f", "value" -> 0.10))
-                  .set("eqcolor", ("type" -> "f", "value" -> 0.0))
-                  .set("rcolor", ("type" -> "f", "value" -> 0.0))
-                  .set("gcolor", ("type" -> "f", "value" -> 0.0))
-                  .set("bcolor", ("type" -> "f", "value" -> 0.0))
-                  .set("fragment", ("type" -> "i", "value" -> true))
-                  .set("redhell", ("type" -> "i", "value" -> true))
-              )
-              .setVertexShader(
-                VertexShader.toString()
-              )
-              .setFragmentShader(
-                FragmentShader.toString()
-              )
+      div(
+        cls := "absolute w-[calc(100%_-_64px)] h-screen right-0 flex flex-row justify-center",
+        div(
+          cls := "mt-8 fixed top-0 right-0"
+          // todo add svg
+        ),
+        div(
+          cls := "w-[50%] h-[50vh] mt-[25vh] flex flex-col justify-start mp-[10vh]",
+          p("cyz1901", cls := "text-2xl font-Roboto"),
+          div(
+            cls := " mt-12 flex flex-row items-center",
+            p("Artists", cls := "text-8xl font-Roboto"),
+            div(cls := " bg-slate-800 h-[1px] w-[30vh] ml-3")
+          ),
+          div(
+            cls := "mt-3 flex flex-row items-baseline",
+            p("+", cls := "text-8xl font-Roboto text-slate-400"),
+            p("programmers", cls := "text-8xl font-Roboto")
           )
         )
-        geo <- IO(IcosahedronGeometry(2, 15))
-        wir <- IO(IcosahedronGeometry(2.3, 5))
-        shape <- IO(Mesh(geo, mat))
-        point <- IO(Points(wir, mat))
-
-        g <- IO(
-          data.shapeGroup
-            .map(s => {
-              s.add(point)
-              s.add(shape.asInstanceOf)
-            })
-            .get
-        )
-
-        _ <- IO(data.scene.foreach(s => {
-          s.add(g.asInstanceOf)
-        }))
-      } yield ()
-
-    step
-  })
-
-  def renderBackground(): Resource[IO, HtmlCanvasElement[IO]] = {
-    Resource.eval(
-      for {
-        e <- createWorld()
-        fRef <- primitiveElement.get
-        f <- fRef.get
-        _ <- f(e._2)
-        _ <- animation()(using e._2)
-        _ <- IO(dom.window.requestAnimationFrame((_) => animation()(using e._2).unsafeRunAsync(_ => {})))
-      } yield e._1
+      ),
+      BubbleKineticEffectComponent.root
     )
-  }
-
-  def createWorld(): IO[(HtmlCanvasElement[IO], IntroductionBackgroundData)] = {
-    val t = for {
-      width <- IO(dom.window.innerWidth)
-      height <- IO(dom.window.innerHeight)
-
-      data <- IO(
-        IntroductionBackgroundData(
-          scene = Some(Scene()),
-          camera = Some(PerspectiveCamera(35, width / height, 1, 1000)),
-          renderer = Some(
-            WebGLRenderer(
-              WebGLRendererParameters().setAlpha(false).setAntialias(false)
-            )
-          )
-        )
-      )
-
-      _ <- IO(data.scene.foreach(_.background = srcMathColorMod.Color("#ffffff")))
-      _ <- IO(data.camera.foreach(_.position.set(0, 0, 16)))
-      _ <- IO(data.renderer.foreach(r => {
-        r.setSize(width, height)
-        r.shadowMap.enabled = true
-      }))
-
-      renderCanvans <- IO(
-        data.renderer.get.domElement
-      )
-
-      // _ <- IO(renderCanvans.modify(cls := "absolute"))
-
-      _ <- IO(
-        dom.window.addEventListener(
-          "resize",
-          (e: dom.UIEvent) => onWindowResize()(using data).unsafeRunAsync(_ => {}),
-          false
-        )
-      )
-    } yield (renderCanvans, data)
-
-    t.map { case (x: HTMLCanvasElement, y: IntroductionBackgroundData) =>
-      (x.asInstanceOf[HtmlCanvasElement[IO]], y)
-    }
-  }
-
-  def animation()(using data: IntroductionBackgroundData): IO[Unit] = {
-    val init = IO {
-      data.shapeGroup.get.children.foreach(x =>
-        x match
-          case a: Points[?, ?] => {
-            val mat = a.material.asInstanceOf[ShaderMaterial]
-            mat.uniforms.get("time").foreach(_.value = (0.12 / 1000) * (Date.now() - startTimeStamp))
-            mat.uniforms.get("pointscale").foreach(_.value = 1.0)
-            mat.uniforms.get("decay").foreach(_.value = 1.80)
-            mat.uniforms.get("size").foreach(_.value = 1)
-            mat.uniforms.get("displace").foreach(_.value = 1.8)
-            mat.uniforms.get("complex").foreach(_.value = 0.69)
-            mat.uniforms.get("waves").foreach(_.value = 20)
-            mat.uniforms.get("fragment").foreach(_.value = true)
-            mat.uniforms.get("redhell").foreach(_.value = true)
-            mat.uniforms.get("eqcolor").foreach(_.value = 10.0)
-            mat.uniforms.get("rcolor").foreach(_.value = 1.5)
-            mat.uniforms.get("gcolor").foreach(_.value = 1.5)
-            mat.uniforms.get("bcolor").foreach(_.value = 1.5)
-          }
-          case b: Mesh[?, ?, ?] => {
-            val mat = b.material.asInstanceOf[ShaderMaterial]
-            mat.uniforms.get("time").foreach(_.value = (0.12 / 1000) * (Date.now() - startTimeStamp))
-            mat.uniforms.get("pointscale").foreach(_.value = 1.0)
-            mat.uniforms.get("decay").foreach(_.value = 1.80)
-            mat.uniforms.get("size").foreach(_.value = 1)
-            mat.uniforms.get("displace").foreach(_.value = 1.8)
-            mat.uniforms.get("complex").foreach(_.value = 0.69)
-            mat.uniforms.get("waves").foreach(_.value = 20)
-            mat.uniforms.get("fragment").foreach(_.value = true)
-            mat.uniforms.get("redhell").foreach(_.value = true)
-            mat.uniforms.get("eqcolor").foreach(_.value = 10.0)
-            mat.uniforms.get("rcolor").foreach(_.value = 1.5)
-            mat.uniforms.get("gcolor").foreach(_.value = 1.5)
-            mat.uniforms.get("bcolor").foreach(_.value = 1.5)
-          }
-      )
-
-      dom.window.requestAnimationFrame((_) => animation()(using data).unsafeRunAsync(_ => {}))
-
-      data.renderer.get.render(data.scene.get, data.camera.get)
-    }
-    init
-  }
-
-  def onWindowResize()(using data: IntroductionBackgroundData): IO[Unit] = {
-    for {
-      width <- IO(dom.window.innerWidth)
-      height <- IO(dom.window.innerHeight)
-      _ <- IO(data.renderer.get.setSize(width, height))
-      _ <- IO(data.camera.get.updateProjectionMatrix())
-    } yield ()
   }
 }
