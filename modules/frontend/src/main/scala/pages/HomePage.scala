@@ -15,6 +15,7 @@ import typings.animejs.mod.*
 import typings.animejs.global.*
 import typings.animejs.libAnimeMod
 import org.scalajs.dom.HTMLElement
+import components.BubbleKineticEffectComponent.animation
 
 object HomePage {
   val tabs = List(
@@ -24,7 +25,7 @@ object HomePage {
   )
 
   val root: Resource[IO, HtmlElement[IO]] = div(
-    cls := "bg-[#FFFAF0] w-full h-full",
+    cls := "bg-[#FFFAF0] w-full h-full v",
     div(
       cls := "w-16 h-full flex flex-col justify-center items-center bg-[#FFFAF0] fixed pt-8",
       div(
@@ -46,35 +47,38 @@ object HomePage {
             },
             tabLabel,
             onMouseEnter --> (_.foreach(_ =>
-              IO {
-                val height = Math
-                  .floor(
-                    dom.window
-                      .getComputedStyle(dom.document.getElementById(s"$path-a"))
-                      .height
-                      .replace("px", "")
-                      .toDouble - dom.window
-                      .getComputedStyle(dom.document.getElementById(s"$path-a"))
-                      .paddingTop
-                      .replace("px", "")
-                      .toDouble - dom.window
-                      .getComputedStyle(dom.document.getElementById(s"$path-a"))
-                      .paddingBottom
-                      .replace("px", "")
-                      .toDouble
-                  )
-
-                libAnimeMod(
-                  AnimeParams()
-                    .setTargets(s"#${path}")
-                    .set(
-                      "height",
-                      s"${height}px"
+              for {
+                _ <- IO {
+                  val height = Math
+                    .floor(
+                      dom.window
+                        .getComputedStyle(dom.document.getElementById(s"$path-a"))
+                        .height
+                        .replace("px", "")
+                        .toDouble - dom.window
+                        .getComputedStyle(dom.document.getElementById(s"$path-a"))
+                        .paddingTop
+                        .replace("px", "")
+                        .toDouble - dom.window
+                        .getComputedStyle(dom.document.getElementById(s"$path-a"))
+                        .paddingBottom
+                        .replace("px", "")
+                        .toDouble
                     )
-                    .setDuration(1000)
-                    .setEasing(EasingOptions.easeInOutExpo)
-                )
-              }
+
+                  libAnimeMod(
+                    AnimeParams()
+                      .setTargets(s"#${path}")
+                      .set(
+                        "height",
+                        s"${height}px"
+                      )
+                      .setDuration(1000)
+                      .setEasing(EasingOptions.easeInOutExpo)
+                  )
+                }
+                _ <- IO {}
+              } yield ()
             )),
             onMouseLeave --> (_.foreach(_ =>
               IO {
