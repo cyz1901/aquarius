@@ -25,11 +25,11 @@ object HomePage {
   )
 
   val root: Resource[IO, HtmlElement[IO]] = div(
-    cls := "bg-[#FFFAF0] w-full h-full v",
+    cls := "bg-[#FFFAF0] w-full h-full",
     div(
-      cls := "w-16 h-full flex flex-col justify-center items-center bg-[#FFFAF0] fixed pt-8",
+      cls := "w-full md:w-16 h-12 md:h-full flex md:justify-center items-center fixed md:flex-row",
       div(
-        cls := "flex flex-wrap justify-center items-center w-16 fixed top-0 left-0 pt-8",
+        cls := "flex md:flex-wrap  justify-start md:justify-center items-center w-16 md:fixed md:top-0 md:left-0 pt-2 md:pt-8",
         tabs.map { case (path, tabLabel) =>
           import org.scalajs.dom
           a(
@@ -38,10 +38,10 @@ object HomePage {
             navMod { active =>
               cls <-- active.ifF(
                 List(
-                  "text-xl px-4 py-1 rounded bg-blue-200 text-slate-900 [writing-mode:vertical-rl] transform rotate-180 mb-4 flex-1 font-Roboto font-normal"
+                  "md:text-xl px-4 py-1 rounded bg-blue-200 text-slate-900 md:[writing-mode:vertical-rl] transform md:rotate-180 mb-4 flex-1 font-Roboto font-normal"
                 ),
                 List(
-                  "text-xl px-4 py-1 rounded text-slate-900 [writing-mode:vertical-rl] transform rotate-180 mb-4 flex-1 font-Roboto font-normal"
+                  "md:text-xl px-4 py-1 rounded text-slate-900 md:[writing-mode:vertical-rl] transform md:rotate-180 mb-4 flex-1 font-Roboto font-normal"
                 )
               )
             },
@@ -49,49 +49,52 @@ object HomePage {
             onMouseEnter --> (_.foreach(_ =>
               for {
                 _ <- IO {
-                  val height = Math
-                    .floor(
-                      dom.window
-                        .getComputedStyle(dom.document.getElementById(s"$path-a"))
-                        .height
-                        .replace("px", "")
-                        .toDouble - dom.window
-                        .getComputedStyle(dom.document.getElementById(s"$path-a"))
-                        .paddingTop
-                        .replace("px", "")
-                        .toDouble - dom.window
-                        .getComputedStyle(dom.document.getElementById(s"$path-a"))
-                        .paddingBottom
-                        .replace("px", "")
-                        .toDouble
-                    )
+                  if (dom.window.innerWidth > 760) {
+                    val height = Math
+                      .floor(
+                        dom.window
+                          .getComputedStyle(dom.document.getElementById(s"$path-a"))
+                          .height
+                          .replace("px", "")
+                          .toDouble - dom.window
+                          .getComputedStyle(dom.document.getElementById(s"$path-a"))
+                          .paddingTop
+                          .replace("px", "")
+                          .toDouble - dom.window
+                          .getComputedStyle(dom.document.getElementById(s"$path-a"))
+                          .paddingBottom
+                          .replace("px", "")
+                          .toDouble
+                      )
 
+                    libAnimeMod(
+                      AnimeParams()
+                        .setTargets(s"#${path}")
+                        .set(
+                          "height",
+                          s"${height}px"
+                        )
+                        .setDuration(1000)
+                        .setEasing(EasingOptions.easeInOutExpo)
+                    )
+                  }
+                }
+              } yield ()
+            )),
+            onMouseLeave --> (_.foreach(_ =>
+              IO {
+                if (dom.window.innerWidth > 760) {
                   libAnimeMod(
                     AnimeParams()
                       .setTargets(s"#${path}")
                       .set(
                         "height",
-                        s"${height}px"
+                        s"0px"
                       )
                       .setDuration(1000)
                       .setEasing(EasingOptions.easeInOutExpo)
                   )
                 }
-                _ <- IO {}
-              } yield ()
-            )),
-            onMouseLeave --> (_.foreach(_ =>
-              IO {
-                libAnimeMod(
-                  AnimeParams()
-                    .setTargets(s"#${path}")
-                    .set(
-                      "height",
-                      s"0px"
-                    )
-                    .setDuration(1000)
-                    .setEasing(EasingOptions.easeInOutExpo)
-                )
               }
             )),
             div(

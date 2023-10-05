@@ -36,9 +36,9 @@ object IntroductionPage {
     div(
       div(
         idAttr := "k",
-        cls := "absolute w-[calc(100%_-_64px)] h-screen right-0 flex flex-row justify-center",
+        cls := "absolute w-full md:w-[calc(100%_-_64px)] h-screen right-0 flex flex-row justify-center",
         div(
-          cls := "mt-8  mr-8 fixed top-0 right-0",
+          cls := "mt-3 md:mt-8 mr-2 md:mr-8 fixed top-0 right-0",
           button(
             (),
             onClick --> (_.foreach(_ => clickChangeThemeButton()))
@@ -60,17 +60,17 @@ object IntroductionPage {
           )
         ),
         div(
-          cls := "w-[50%] h-[50vh] mt-[25vh] flex flex-col justify-start mp-[10vh]",
-          p("cyz1901", cls := "text-2xl font-Roboto"),
+          cls := "w-[50%] h-[50vh]  mt-[40vh] md:mt-[25vh] flex flex-col justify-start mp-[10vh]",
+          p("cyz1901", cls := "md:text-2xl text-4xl font-Roboto"),
           div(
-            cls := " mt-12 flex flex-row items-center",
-            p("Artists", cls := "text-8xl font-Roboto"),
+            cls := "mt-3 md:mt-12 flex flex-row items-center",
+            p("Artists", cls := "md:text-8xl text-4xl font-Roboto"),
             div(cls := " bg-slate-800 h-[1px] w-[30vh] ml-3")
           ),
           div(
             cls := "mt-3 flex flex-row items-baseline",
-            p("+", cls := "text-8xl font-Roboto text-slate-400"),
-            p("programmers", cls := "text-8xl font-Roboto", onLoad --> (_.foreach(_ => IO(println(7777)))))
+            p("+", cls := "md:text-8xl text-4xl font-Roboto text-slate-400"),
+            p("programmers", cls := "md:text-8xl text-4xl font-Roboto", onLoad --> (_.foreach(_ => IO(println(7777)))))
           )
         ),
         div(cls := "fixed bottom-3 left-[50%]", renderScrollingTipIcon())
