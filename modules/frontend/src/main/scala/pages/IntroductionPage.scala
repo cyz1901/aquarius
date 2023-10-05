@@ -29,11 +29,13 @@ import typings.animejs.libAnimeMod
 import typings.animejs.mod.AnimeParams
 import typings.animejs.mod.EasingOptions
 import calico.html.EventProp.PipeModifier
+import org.scalajs.dom.Element
 
 object IntroductionPage {
   val root: Resource[IO, HtmlElement[IO]] = {
     div(
       div(
+        idAttr := "k",
         cls := "absolute w-[calc(100%_-_64px)] h-screen right-0 flex flex-row justify-center",
         div(
           cls := "mt-8  mr-8 fixed top-0 right-0",
@@ -74,10 +76,6 @@ object IntroductionPage {
         div(cls := "fixed bottom-3 left-[50%]", renderScrollingTipIcon())
       ),
       BubbleKineticEffectComponent.root
-      // div(cls := "fixed bottom-0 left-[50%]", renderScrollingTipIcon()),
-      // div(
-      //   cls := " h-14 w-4"
-      // )
     )
   }
 
@@ -87,26 +85,46 @@ object IntroductionPage {
       .eval(
         for {
           d <- IO(dom.document.createElement("div"))
+          _ <- IO {
+            val path = document.createElementNS("http://www.w3.org/2000/svg", "path")
+            path.setAttribute(
+              "d",
+              "M8 3a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 3zm4 8a4 4 0 0 1-8 0V5a4 4 0 1 1 8 0v6zM8 0a5 5 0 0 0-5 5v6a5 5 0 0 0 10 0V5a5 5 0 0 0-5-5z"
+            )
+            val svg = dom.document.createElementNS("http://www.w3.org/2000/svg", "svg")
+            svg.appendChild(path)
+            svg.setAttribute("width", "24")
+            svg.setAttribute("height", "24")
+            svg.setAttribute("fill", "currentColor")
+            svg.setAttribute("class", "bi bi-brightness-high stroke-2")
+            svg.setAttribute("viewBox", "0 0 16 16")
+            svg.setAttribute("id", "scrollingTip")
+            d.appendChild(svg)
+          }
+          _ <- IO(
+            IO(
+              libAnimeMod(
+                AnimeParams()
+                  .setTargets(s"#${d.firstChild.asInstanceOf[SVGElement].id}")
+                  .set(
+                    "opacity",
+                    js.Array(1, 0)
+                  )
+                  .set(
+                    "translateY",
+                    js.Array(0, -10)
+                  )
+                  .setAutoplay(true)
+                  .setLoop(true)
+                  .setDuration(1500)
+                  .setEasing(EasingOptions.easeInOutSine)
+                  .setDirection("alternate")
+              )
+            ).unsafeRunAsync(_ => {})
+          )
+
         } yield (d.asInstanceOf[HtmlElement[IO]])
       )
-      .evalTap(
-        _.innerHtml.set(
-          """
-          <svg id="scrollingTip" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-brightness-high stroke-2" viewBox="0 0 16 16">
-            <path d="M8 3a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 3zm4 8a4 4 0 0 1-8 0V5a4 4 0 1 1 8 0v6zM8 0a5 5 0 0 0-5 5v6a5 5 0 0 0 10 0V5a5 5 0 0 0-5-5z"/>
-          </svg>
-          """
-        )
-      )
-      .evalMap(x => {
-        val g = for {
-          _ <- IO {
-            println(dom.document.getElementById("scrollingTip"))
-          }
-          e <- IO(x)
-        } yield e
-        g
-      })
 
   }
 
