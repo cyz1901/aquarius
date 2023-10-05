@@ -2,13 +2,12 @@ import { resolve } from "path";
 import { defineConfig } from "vite";
 import { createHtmlPlugin } from "vite-plugin-html";
 import glsl from "vite-plugin-glsl";
-import scalaJSPlugin from "@scala-js/vite-plugin-scalajs";
 
 import scalaVersion from "./scala-version";
 
 export default ({ mode }) => {
   const mainJS = `modules/frontend/target/scala-${scalaVersion}/frontend-${
-    mode === "production" ? "opt" : "fastopt"
+    mode === "production" ? "fastopt" : "fastopt"
   }/main.js`;
   const script = `<script type="module" src="/${mainJS}"></script>`;
 
@@ -22,7 +21,6 @@ export default ({ mode }) => {
       },
     },
     plugins: [
-      scalaJSPlugin(),
       glsl({ include: ["**/*.vert"] }),
       createHtmlPlugin({
         minify: mode === "production",
