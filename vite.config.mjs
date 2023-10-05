@@ -4,10 +4,11 @@ import { createHtmlPlugin } from "vite-plugin-html";
 import glsl from "vite-plugin-glsl";
 
 import scalaVersion from "./scala-version";
+import requireTransform from "vite-plugin-require-transform";
 
 export default ({ mode }) => {
   const mainJS = `modules/frontend/target/scala-${scalaVersion}/frontend-${
-    mode === "production" ? "fastopt" : "fastopt"
+    mode === "production" ? "opt" : "fastopt"
   }/main.js`;
   const script = `<script type="module" src="/${mainJS}"></script>`;
 
@@ -29,6 +30,9 @@ export default ({ mode }) => {
             script,
           },
         },
+      }),
+      requireTransform({
+        fileRegex: /.js$|.vue$/,
       }),
     ],
   });

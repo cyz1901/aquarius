@@ -25,10 +25,14 @@ object App {
 
   @main def main() = {
     routes(
+      a(
+        "hello"
+      ),
       pathEnd {
         runEffect {
           IO {
-            window.location.href = window.location.href + "home/introduction";
+            // window.location.href = window.location.href + "home/introduction";
+            println(window.location.href)
           }
         }
       },
