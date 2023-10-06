@@ -23,6 +23,7 @@ import typings.three.srcConstantsMod.Side
 import org.scalablytyped.runtime.StringDictionary
 import scala.scalajs.js.Date
 import scala.scalajs.js.annotation.JSImport
+import configs.Theme
 
 @js.native
 @JSImport("glsl/bgVertexShader.vert", JSImport.Default)
@@ -135,7 +136,9 @@ object BubbleKineticEffectComponent {
         )
       )
 
-      _ <- IO(data.scene.foreach(_.background = srcMathColorMod.Color("#FFFAF0")))
+      _ <- IO(
+        data.scene.foreach(_.background = srcMathColorMod.Color("transparent"))
+      )
       _ <- IO(data.camera.foreach(_.position.set(0, 0, 16)))
       _ <- IO(data.renderer.foreach(r => {
         r.setSize(width, height)
@@ -145,7 +148,9 @@ object BubbleKineticEffectComponent {
       renderCanvans <- IO(
         data.renderer.get.domElement
       )
-      _ <- IO(renderCanvans.style.zIndex = "20")
+      _ <- IO {
+        renderCanvans.style.zIndex = "20"
+      }
       _ <- IO(
         dom.window.addEventListener(
           "resize",
@@ -162,6 +167,10 @@ object BubbleKineticEffectComponent {
 
   def animation()(using data: IntroductionBackgroundData): IO[Unit] = {
     val init = IO {
+      data.scene.foreach(x => {
+        x.background = if (Theme.isLight) srcMathColorMod.Color("#f5f5f5") else srcMathColorMod.Color("#303030")
+      })
+
       data.shapeGroup.get.children.foreach(x =>
         x match
           case a: Points[?, ?] => {

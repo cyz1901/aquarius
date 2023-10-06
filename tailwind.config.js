@@ -7,6 +7,7 @@ module.exports = (api) => {
       `./modules/frontend/target/scala-${scalaVersion}/frontend-${scalajsMode}/*.js`,
       "./index.html",
     ],
+    darkMode: "class",
     theme: {
       extend: {
         fontFamily: {

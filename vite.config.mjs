@@ -16,6 +16,7 @@ export default ({ mode }) => {
       alias: {
         styles: resolve(__dirname, "./modules/frontend/styles"),
         svg: resolve(__dirname, "./modules/frontend/static/svg"),
+        images: resolve(__dirname, "./modules/frontend/static/images"),
         glsl: resolve(__dirname, "./modules/frontend/glsl"),
       },
     },
